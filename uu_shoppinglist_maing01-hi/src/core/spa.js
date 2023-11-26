@@ -5,7 +5,8 @@ import Plus4U5 from "uu_plus4u5g02";
 import Plus4U5App from "uu_plus4u5g02-app";
 
 import Config from "./config/config.js";
-import Home from "../routes/home.js";
+import Home from "../routes/home";
+import Create from "../routes/create";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -17,6 +18,7 @@ const ROUTE_MAP = {
   "": { redirect: "home" },
   home: (props) => <Home {...props} />,
   about: (props) => <About {...props} />,
+  create: (props) => <Create {...props} />,
   "sys/uuAppWorkspace/initUve": (props) => <InitAppWorkspace {...props} />,
   controlPanel: (props) => <ControlPanel {...props} />,
   "*": () => (

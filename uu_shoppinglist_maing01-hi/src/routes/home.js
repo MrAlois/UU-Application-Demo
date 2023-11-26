@@ -1,26 +1,19 @@
 //@@viewOn:imports
-import { Utils, createVisualComponent, useSession, Lsi } from "uu5g05";
-import Uu5Elements from "uu5g05-elements";
-import Plus4U5Elements from "uu_plus4u5g02-elements";
+import {
+  createVisualComponent, useSession,
+} from "uu5g05";
 import { withRoute } from "uu_plus4u5g02-app";
 
 import Config from "./config/config.js";
-import WelcomeRow from "../bricks/welcome-row.js";
-import RouteBar from "../core/route-bar.js";
-import importLsi from "../lsi/import-lsi.js";
+import ShoppingListContainer from "../bricks/shopping-list-container";
+import ShoppingListHeader from "../bricks/shopping-header";
+import {LoremIpsum} from "uu5g05-dev";
 //@@viewOff:imports
 
 //@@viewOn:constants
 //@@viewOff:constants
 
 //@@viewOn:css
-const Css = {
-  icon: () =>
-    Config.Css.css({
-      fontSize: 48,
-      lineHeight: "1em",
-    }),
-};
 //@@viewOff:css
 
 //@@viewOn:helpers
@@ -28,7 +21,7 @@ const Css = {
 
 let Home = createVisualComponent({
   //@@viewOn:statics
-  uu5Tag: Config.TAG + "Home",
+  uu5Tag: Config.TAG + "Lists",
   //@@viewOff:statics
 
   //@@viewOn:propTypes
@@ -39,51 +32,49 @@ let Home = createVisualComponent({
   defaultProps: {},
   //@@viewOff:defaultProps
 
-  render(props) {
+  render() {
     //@@viewOn:private
+    const staticData = [
+      {
+        listName: "Yes!",
+        ownerName: "Alois Šenkyřík",
+        dateCreated: "10-03-1996",
+        description: "Nullam sapien sem, ornare ac, nonummy non, lobortis a enim. Mauris dictum facilisis augue. Fusce tellus odio, dapibus id fermentum quis, suscipit id erat. Integer rutrum, orci vestibulum ullamcorper ultricies, lacus quam ultricies odio, vitae placerat pede sem sit amet enim. Fusce consectetuer risus a nunc. Pellentesque arcu. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Maecenas aliquet accumsan leo. Maecenas libero. Vivamus ac leo pretium faucibus. Maecenas libero. Pellentesque arcu."
+      },
+      {
+        listName: "Hej!",
+        ownerName: "Alois Šenkyřík",
+        dateCreated: "10-02-1996",
+        description: "In laoreet, magna id viverra tincidunt, sem odio bibendum justo."
+      },
+      {
+        listName: "Ahoj!",
+        ownerName: "Alois Šenkyřík",
+        dateCreated: "10-02-2013",
+        description: "Nulla non lectus sed nisl molestie malesuada. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Vivamus porttitor turpis ac leo. Morbi imperdiet, mauris ac auctor dictum, nisl ligula egestas nulla, et sollicitudin sem purus in lacus. "
+      },
+      {
+        listName: "Nikoliv!",
+        ownerName: "Alois Šenkyřík",
+        description: "Nulla non lectus sed nisl molestie malesuada. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Vivamus porttitor turpis ac leo. Morbi imperdiet, mauris ac auctor dictum, nisl ligula egestas nulla, et sollicitudin sem purus in lacus. "
+      },
+    ];
     const { identity } = useSession();
+
     //@@viewOff:private
 
-    //@@viewOn:interface
-    //@@viewOff:interface
-
     //@@viewOn:render
-    const attrs = Utils.VisualComponent.getAttrs(props);
     return (
-      <div {...attrs}>
-        <RouteBar />
-        <WelcomeRow left={<Plus4U5Elements.PersonPhoto size="xl" borderRadius="none" />}>
-          <Uu5Elements.Text category="story" segment="heading" type="h2">
-            <Lsi import={importLsi} path={["Home", "welcome"]} />
-          </Uu5Elements.Text>
-          {identity && (
-            <Uu5Elements.Text category="story" segment="heading" type="h2">
-              {identity.name}
-            </Uu5Elements.Text>
-          )}
-        </WelcomeRow>
-        <WelcomeRow left={<Uu5Elements.Icon icon="mdi-human-greeting" className={Css.icon()} />}>
-          <Uu5Elements.Text category="story" segment="body" type="common">
-            <Lsi import={importLsi} path={["Home", "intro"]} />
-          </Uu5Elements.Text>
-        </WelcomeRow>
-        <WelcomeRow left={<Uu5Elements.Icon icon="mdi-monitor" className={Css.icon()} />}>
-          <Uu5Elements.Text category="story" segment="body" type="common">
-            <Lsi import={importLsi} path={["Home", "clientSide"]} />
-          </Uu5Elements.Text>
-        </WelcomeRow>
-        <WelcomeRow left={<Uu5Elements.Icon icon="mdi-server" className={Css.icon()} />}>
-          <Uu5Elements.Text category="story" segment="body" type="common">
-            <Lsi import={importLsi} path={["Home", "serverSide"]} />
-          </Uu5Elements.Text>
-        </WelcomeRow>
+      <div>
+        <ShoppingListHeader text={identity.name + "'s shopping lists!"}></ShoppingListHeader>
+        <ShoppingListContainer data={staticData}></ShoppingListContainer>
       </div>
     );
     //@@viewOff:render
-  },
+  }
 });
 
-Home = withRoute(Home, { authenticated: true });
+Home = withRoute(Home);
 
 //@@viewOn:exports
 export { Home };
