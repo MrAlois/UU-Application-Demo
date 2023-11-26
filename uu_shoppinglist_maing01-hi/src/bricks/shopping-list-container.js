@@ -1,5 +1,5 @@
 //@@viewOn:imports
-import {createVisualComponent, PropTypes, useScreenSize, useSession} from "uu5g05";
+import {createVisualComponent, PropTypes, useRoute, useScreenSize, useSession} from "uu5g05";
 import Uu5Elements, {Button, Icon, Text} from "uu5g05-elements";
 import Config from "./config/config.js";
 import ShoppingListCard from "./shopping-list-card";
@@ -45,6 +45,7 @@ const ShoppingListContainer = createVisualComponent({
   render(props) {
     //@@viewOn:private
     const { data } = props
+    const [route, setRoute] = useRoute()
     //@@viewOff:private
 
     //@@viewOn:render
@@ -68,7 +69,7 @@ const ShoppingListContainer = createVisualComponent({
           }
 
           <Uu5Elements.Grid.Item>
-            <Uu5Elements.Box shape="interactiveItem" onClick={event => alert("Creating")} className={Css.card()} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+            <Uu5Elements.Box shape="interactiveItem" onClick={event => setRoute("create")} className={Css.card()} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
               <Text style={{ margin: 'auto', fontSize: '7rem', color: 'grey'}} significance="subdued">+</Text>
             </Uu5Elements.Box>
           </Uu5Elements.Grid.Item>

@@ -1,8 +1,9 @@
 //@@viewOn:imports
-import {createVisualComponent, useState, useRef, Fragment, useRoute, useCall} from "uu5g05";
+import {createVisualComponent, useState, useRef, Fragment, useRoute, useCall, useRouter, Utils} from "uu5g05";
 import Uu5Elements from "uu5g05-elements";
 import { Config } from "uu5g05-dev";
 import ShoppingListEditModalButton from "./shopping-list-edit-modal";
+import Create from "../routes/create";
 //@@viewOff:imports
 
 //@@viewOn:css
@@ -22,7 +23,7 @@ const PopoverMenu = createVisualComponent({
   render({ preferredPosition, children, itemList, icon, ...popoverProps }) {
     const [popoverSettings, setPopoverSettings] = useState(null);
     const buttonRef = useRef();
-    const navigate = useRoute();
+    const [route, setRoute] = useRoute()
 
     return (
       <Fragment>
@@ -44,7 +45,7 @@ const PopoverMenu = createVisualComponent({
             className={Config.Css.css`padding: 8px;`}
           >
             <Uu5Elements.MenuList itemList={itemList || [
-              { children: "Edit", icon: "uugds-pencil", onClick: () => navigate.setRoute("/create")},
+              { children: "Edit", icon: "uugds-pencil", onClick: () => setRoute("edit", {listId: "1"})},
               { children: "Archive", icon: "uugds-shield", onClick: () => alert("Archiving!")},
               { divider: true },
               { children: "Delete", icon: "uugds-delete", onClick: () => alert("Deleting!") },

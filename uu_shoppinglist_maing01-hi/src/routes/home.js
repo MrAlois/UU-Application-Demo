@@ -34,7 +34,7 @@ let Home = createVisualComponent({
 
   render() {
     //@@viewOn:private
-    const staticData = [
+    let staticData = [
       {
         listName: "Yes!",
         ownerName: "Alois Šenkyřík",
