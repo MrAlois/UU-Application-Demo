@@ -8,6 +8,7 @@ import Config from "./config/config.js";
 import Home from "../routes/home";
 import Create from "../routes/create";
 import Edit from "../routes/edit";
+import Detail from "../routes/detail";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -21,7 +22,7 @@ const ROUTE_MAP = {
   about: (props) => <About {...props} />,
   create: (props) => <Create {...props} />,
   edit: (props) => <Edit {...props} />,
-  detail: (props) => <Create {...props} />,
+  detail: (props) => <Detail {...props} />,
   "sys/uuAppWorkspace/initUve": (props) => <InitAppWorkspace {...props} />,
   controlPanel: (props) => <ControlPanel {...props} />,
   "*": () => (

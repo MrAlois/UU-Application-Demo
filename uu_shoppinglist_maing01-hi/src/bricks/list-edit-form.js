@@ -2,13 +2,10 @@
 import {
   createVisualComponent, useRoute, useState,
 } from "uu5g05";
-import { withRoute } from "uu_plus4u5g02-app";
-import Uu5Elements, {Block, Button} from "uu5g05-elements";
-import Uu5Forms, {Checkbox, TextSelect} from "uu5g05-forms";
+import Uu5Elements, {Button, Text} from "uu5g05-elements";
+import Uu5Forms, {TextSelect} from "uu5g05-forms";
 
 import Config from "./config/config.js";
-import ShoppingListHeader from "../bricks/shopping-header";
-import UU5 from "uu5g04";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -33,6 +30,7 @@ const Css = {
 
 //@@viewOn:helpers
 //@@viewOff:helpers
+
 function withControlledInput(Input) {
   return (props) => {
     const {
@@ -77,10 +75,9 @@ function withControlledInput(Input) {
   };
 }
 
-
-let Create = createVisualComponent({
+let ListEditForm = createVisualComponent({
   //@@viewOn:statics
-  uu5Tag: Config.TAG + "Create",
+  uu5Tag: Config.TAG + "Edit",
   //@@viewOff:statics
 
   //@@viewOn:propTypes
@@ -91,60 +88,68 @@ let Create = createVisualComponent({
   defaultProps: {},
   //@@viewOff:defaultProps
 
-  render() {
+  render(props) {
     //@@viewOn:private
-    const [route, setRoute] = useRoute()
-    const TextSelect = withControlledInput(Uu5Forms.TextSelect);
-    const Checkbox = withControlledInput(Uu5Forms.Checkbox);
+    const {
+      listId,
+      listName = "<undefined>",
+      ownerId = "1",
+      memberId = [""],
+      users = [
+        { value: "1", children: "Alois Šenkyřík" },
+        { value: "2", children: "Linda Knížková" },
+      ],
+      description = ""
+    } = props
 
+    const [route, setRoute] = useRoute();
+    const TextSelect = withControlledInput(Uu5Forms.TextSelect);
     //@@viewOff:private
 
     //@@viewOn:render
     return (
-      <div>
-        <ShoppingListHeader text={"Creating a new shopping list"}></ShoppingListHeader>
-        <Uu5Forms.Form
-          onSubmit={(e) => {
-            alert("Submitted with values:\n" + JSON.stringify(e.data.value, null, 2));
-          }}
-        >
-          <Uu5Elements.Block info="Buy a Red Monster T-shirt in a limited edition and win one of interesting presents.">
-            <div className={Css.formBody()}>
-              <div>
-                <Uu5Forms.FormText name="name" label="List name" required message="Item count is limited by current stock reserve." r/>
-              </div>
-
-              <div className={Config.Css.css({ display: "grid", rowGap: 8 })}>
-                <TextSelect
-                  name="additionalUserId"
-                  label="Additional editors"
-                  itemList={[
-                    { value: "12345", children: "Alois Šenkyřík" },
-                    { value: "54321", children: "Linda Knížková" },
-                  ]}
-                  value={["12345", "54321"]}
-                  multiple
-                />
-              </div>
-              <div>
-                <Uu5Forms.FormTextArea name="desc" label="Description" />
-              </div>
-              <div>
-                <Button onClick={() => setRoute("home")} style={Css.content()} significance="subdued">Back</Button>
-                <Uu5Forms.SubmitButton style={Css.content()}>Create list</Uu5Forms.SubmitButton>
-              </div>
+      <Uu5Forms.Form.View>
+        <Uu5Elements.Block {...props} info="Edit or create a new list" header={<Text category="story" segment="heading" type="h2">Editing "{listName}"</Text>}>
+          <div className={Css.formBody()}>
+            <div>
+              <Uu5Forms.FormText name="listName" label="List name" required
+                                 message="Item count is limited by current stock reserve."/>
             </div>
-          </Uu5Elements.Block>
-        </Uu5Forms.Form>
-      </div>
+
+            <div className={Config.Css.css({display: "grid", rowGap: 8})}>
+              <Uu5Forms.FormSelect
+                name="ownerName"
+                label="Owner"
+                initialValue={ownerId}
+                itemList={users}
+              />
+            </div>
+
+            <div className={Config.Css.css({display: "grid", rowGap: 8})}>
+              <TextSelect
+                name="additionalUserId"
+                label="Additional editors"
+                itemList={[
+                  {value: "12345", children: "Alois Šenkyřík"},
+                  {value: "54321", children: "Linda Knížková"},
+                ]}
+                value={["12345", "54321"]}
+                multiple
+              />
+            </div>
+
+            <div>
+              <Uu5Forms.FormTextArea name="desc" initialValue={description} label="Description"/>
+            </div>
+          </div>
+        </Uu5Elements.Block>
+      </Uu5Forms.Form.View>
     );
     //@@viewOff:render
   }
 });
 
-Create = withRoute(Create);
-
 //@@viewOn:exports
-export { Create };
-export default Create;
+export {ListEditForm};
+export default ListEditForm;
 //@@viewOff:exports

@@ -1,9 +1,10 @@
 //@@viewOn:imports
-import {Utils, createVisualComponent, PropTypes, useScreenSize, useState} from "uu5g05";
+import {Utils, createVisualComponent, PropTypes, useScreenSize, useState, useRoute} from "uu5g05";
 
 import Config from "./config/config.js";
 import {Box, Button, Line, Link, Text} from "uu5g05-elements";
-import PopoverMenu from "./popover-menu";
+import ListCardPopoverMenu from "./list-card-popover-menu";
+import React from "react";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -26,9 +27,9 @@ const Css = {
 //@@viewOn:helpers
 //@@viewOff:helpers
 
-const ShoppingListCard = createVisualComponent({
+const ListCard = createVisualComponent({
   //@@viewOn:statics
-  uu5Tag: Config.TAG + "ShoppingListCard",
+  uu5Tag: Config.TAG + "ListCard",
   //@@viewOff:statics
 
   //@@viewOn:propTypes
@@ -53,6 +54,8 @@ const ShoppingListCard = createVisualComponent({
     //@@viewOn:private
     const loremIpsum = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed convallis magna eu sem. Nunc auctor. In rutrum. In enim a arcu imperdiet malesuada. Maecenas lorem. Aenean fermentum risus id tortor. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.";
     const { listId, listName, ownerName, dateCreated, description = loremIpsum} = props;
+
+    const [route, setRoute] = useRoute()
     //@@viewOff:private
 
     //@@viewOn:interface
@@ -62,14 +65,15 @@ const ShoppingListCard = createVisualComponent({
     return (
       <div className={Css.cardBody()}>
         <div className={Css.spaceBetween()}>
-          <Link colorScheme="primary" target="_self" onClick={event => alert(listName + ": " + ownerName)}>
+          <Link colorScheme="primary" target="_self" onClick={event => setRoute("/detail", {id: listId})}>
             <Text category="story" segment="heading" type="h4">{listName}</Text>
           </Link>
-          <PopoverMenu icon={UU5.Icons.menu} preferredPosition="bottom-right"  />
+          <ListCardPopoverMenu icon={UU5.Icons.menu} preferredPosition="bottom-right"/>
         </div>
 
         <p></p>
         <Line/>
+
         <div className={Css.spaceBetween()}>
           <Text category="story" segment="body" type="minor">Owner:  {ownerName}</Text>
           <Text category="story" segment="body" type="minor">{dateCreated}</Text>
@@ -84,6 +88,6 @@ const ShoppingListCard = createVisualComponent({
 });
 
 //@@viewOn:exports
-export { ShoppingListCard };
-export default ShoppingListCard;
+export { ListCard };
+export default ListCard;
 //@@viewOff:exports
