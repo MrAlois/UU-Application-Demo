@@ -35,17 +35,6 @@ const ListEditModal = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-    const {
-      listId,
-      listName,
-      ownerId = "1",
-      memberId = ["2"],
-      users = [
-        { value: "1", children: "Alois Šenkyřík" },
-        { value: "2", children: "Linda Knížková" },
-      ],
-      description = ""
-    } = props
     //@@viewOff:private
 
     //@@viewOn:render

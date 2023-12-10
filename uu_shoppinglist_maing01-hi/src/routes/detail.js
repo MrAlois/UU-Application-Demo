@@ -6,8 +6,8 @@ import {
 import { withRoute } from "uu_plus4u5g02-app";
 
 import Config from "./config/config.js";
-import {Block, Text} from "uu5g05-elements";
-import ListItem from "../bricks/list-item";
+import {Block, Box, Text} from "uu5g05-elements";
+import ListDetailItem from "../bricks/list-detail-item";
 import Uu5Elements from "uu5g05-elements";
 import ListCard from "../bricks/list-card";
 import ListEditModal from "../bricks/list-edit-modal";
@@ -22,17 +22,7 @@ import React from "react";
 const Css = {
   content: () =>
     Config.Css.css({
-      // marginLeft: "15rem",
-      // marginTop: "10rem",
-      // marginRight: "15rem",
       padding: "2rem"
-    }),
-  body: () =>
-    Config.Css.css({
-      display: "grid",
-      rowGap: 8,
-      columnGap: 32,
-      margin: "0 15% 0 15%"
     })
 };
 //@@viewOff:css
@@ -42,24 +32,26 @@ const Css = {
 
 const ListMenu = createVisualComponent({
   render(props) {
-    const [open, setOpen] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
     const [openEdit, setEditOpen] = useState(false);
+    const [openArchive, setArchiveOpen] = useState(false);
 
     return (
       <Content>
         <Block>
-          <Uu5Elements.Button icon="uugds-pencil" colorScheme="blue" onClick={() => setEditOpen(true)} {...props}>
+          <Uu5Elements.Button icon="uugds-pencil" onClick={() => setEditOpen(true)} {...props}>
             Edit
           </Uu5Elements.Button>
-          <Uu5Elements.Button icon="uugds-delete" colorScheme="red" onClick={() => setOpen(true)} {...props}/>
+          <Uu5Elements.Button icon="uugds-shield" onClick={() => setArchiveOpen(true)} {...props}/>
+          <Uu5Elements.Button icon="uugds-delete" colorScheme="red" onClick={() => setOpenDelete(true)} {...props}/>
         </Block>
 
         <Uu5Elements.Dialog
-          open={open}
-          onClose={() => setOpen(false)}
-          header="Delete this file?"
+          open={openDelete}
+          onClose={() => setOpenDelete(false)}
+          header="Delete this list?"
           icon={<Uu5Elements.Svg code="uugdssvg-svg-delete" />}
-          info="File data cannot be recovered"
+          info="List data cannot be recovered!"
           actionDirection="horizontal"
           actionList={[
             {
@@ -69,6 +61,26 @@ const ListMenu = createVisualComponent({
             {
               children: "Delete",
               onClick: () => alert("Deleting!"),
+              colorScheme: "red",
+              significance: "highlighted",
+            },
+          ]}
+        />
+
+        <Uu5Elements.Dialog
+          open={openArchive}
+          onClose={() => setArchiveOpen(false)}
+          header="Archive this list?"
+          icon={<Uu5Elements.Svg code="uugdssvg-svg-security" />}
+          actionDirection="horizontal"
+          actionList={[
+            {
+              children: "Cancel",
+              onClick: () => console.log("Cancel"),
+            },
+            {
+              children: "Delete",
+              onClick: () => alert("Archiving!"),
               colorScheme: "red",
               significance: "highlighted",
             },
@@ -107,16 +119,14 @@ let Detail = createVisualComponent({
   render(props) {
     //@@viewOn:private
     const lorem = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam posuere lacus quis dolor. Pellentesque sapien. Pellentesque pretium lectus id turpis. Nam sed tellus id magna elementum tincidunt. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla est. Maecenas aliquet accumsan leo. Nullam faucibus mi quis velit. Morbi leo mi, nonummy eget tristique non, rhoncus non leo. Suspendisse nisl. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Aenean vel massa quis mauris vehicula lacinia. Morbi leo mi, nonummy eget tristique non, rhoncus non leo.";
-    const { identity } = useSession();
-    const { listId } = props;
-    let detailData = {
+    const detailData = {
       listName: "Testing list 1",
       ownerName: "Alois Šenkyřík",
       dateCreated: "10.12.2023",
       dateUpdate: "10.12.2023",
       description: lorem,
       members: ["Linda Kotlíková", "Bolek Polívka", "Miloš Zeman"],
-      items:[
+      items: [
         {id: "1", description: "Tralalalal", state: 0},
         {id: "2", description: "Johohooh", state: 0},
         {id: "3", description: "Uvař vodue dolej víno", state: 0},
@@ -171,7 +181,8 @@ let Detail = createVisualComponent({
             {
               detailData.items.map(item => {
                 return (
-                  <ListItem name={item.id} label={item.description} value={item.state}></ListItem>
+                  <ListDetailItem name={item.id} label={item.description} value={item.state} onDelete={() => {
+                  }}/>
                 )
               })
             }

@@ -1,10 +1,9 @@
 //@@viewOn:imports
-import {Utils, createVisualComponent, PropTypes, useScreenSize, useSession} from "uu5g05";
+import {createVisualComponent} from "uu5g05";
 
 import Config from "./config/config.js";
-import {Block, Button, Header} from "uu5g05-elements";
+import {Button} from "uu5g05-elements";
 import {Checkbox} from "uu5g05-forms";
-import Uu5Forms from "uu5g05-forms";
 
 //@@viewOff:imports
 
@@ -25,9 +24,9 @@ const Css = {
 //@@viewOn:helpers
 //@@viewOff:helpers
 
-const ListItem = createVisualComponent({
+const ListDetailItem = createVisualComponent({
   //@@viewOn:statics
-  uu5Tag: Config.TAG + "ListItem",
+  uu5Tag: Config.TAG + "ListDetailItem",
   //@@viewOff:statics
 
   render(props) {
@@ -48,7 +47,7 @@ const ListItem = createVisualComponent({
         </td>
         <td style={{"display": "inline", "paddingLeft": "1em"}}>
             <Button icon="uugds-pencil" onClick={() => alert("Editing task: "+ id)}/>
-            <Button icon="uugds-delete" colorScheme="red" onClick={() => alert("Deleting todo: " + id)}/>
+            <Button icon="uugds-delete" colorScheme="red" onClick={() => props.onDelete()}/>
         </td>
       </tr>
     );
@@ -57,6 +56,6 @@ const ListItem = createVisualComponent({
 });
 
 //@@viewOn:exports
-export {ListItem};
-export default ListItem;
+export {ListDetailItem};
+export default ListDetailItem;
 //@@viewOff:exports

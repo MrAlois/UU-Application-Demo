@@ -99,7 +99,8 @@ let ListEditForm = createVisualComponent({
         { value: "1", children: "Alois Šenkyřík" },
         { value: "2", children: "Linda Knížková" },
       ],
-      description = ""
+      description = "",
+      creating = false
     } = props
 
     const [route, setRoute] = useRoute();
@@ -109,7 +110,14 @@ let ListEditForm = createVisualComponent({
     //@@viewOn:render
     return (
       <Uu5Forms.Form.View>
-        <Uu5Elements.Block {...props} info="Edit or create a new list" header={<Text category="story" segment="heading" type="h2">Editing "{listName}"</Text>}>
+        <Uu5Elements.Block
+          {...props}
+          info="Edit or create a new list"
+          header={
+            creating ? <Text category="story" segment="heading" type="h2">Create new list</Text>
+              : <Text category="story" segment="heading" type="h2">Editing "{listName}"</Text>
+          }
+        >
           <div className={Css.formBody()}>
             <div>
               <Uu5Forms.FormText name="listName" label="List name" required
@@ -122,6 +130,7 @@ let ListEditForm = createVisualComponent({
                 label="Owner"
                 initialValue={ownerId}
                 itemList={users}
+                disabled={creating}
               />
             </div>
 

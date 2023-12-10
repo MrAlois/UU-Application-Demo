@@ -13,12 +13,6 @@ const Calls = {
     return response.data;
   },
 
-  // // example for mock calls
-  // loadDemoContent(dtoIn) {
-  //   const commandUri = Calls.getCommandUri("loadDemoContent");
-  //   return Calls.call("get", commandUri, dtoIn);
-  // },
-
   loadIdentityProfiles() {
     const commandUri = Calls.getCommandUri("sys/uuAppWorkspace/initUve");
     return Calls.call("get", commandUri);
@@ -41,6 +35,51 @@ const Calls = {
 
   getCommandUri(useCase, baseUri = Environment.appBaseUri) {
     return (!baseUri.endsWith("/") ? baseUri + "/" : baseUri) + (useCase.startsWith("/") ? useCase.slice(1) : useCase);
+  },
+
+  getUsers(dtoIn) {
+    const commandUri = Calls.getCommandUri("user");
+    return Calls.call("get", commandUri, dtoIn);
+  },
+
+  getLists(dtoIn) {
+    const commandUri = Calls.getCommandUri("list");
+    return Calls.call("get", commandUri, dtoIn);
+  },
+
+  createList(dtoIn) {
+    const commandUri = Calls.getCommandUri("list");
+    return Calls.call("post", commandUri, dtoIn);
+  },
+
+  updateList(dtoIn) {
+    const commandUri = Calls.getCommandUri("list/update");
+    return Calls.call("post", commandUri, dtoIn);
+  },
+
+  deleteList(dtoIn) {
+    const commandUri = Calls.getCommandUri("list/delete");
+    return Calls.call("post", commandUri, dtoIn);
+  },
+
+  getItemsForList(dtoIn) {
+    const commandUri = Calls.getCommandUri("list/item");
+    return Calls.call("get", commandUri, dtoIn);
+  },
+
+  createItemForList(dtoIn) {
+    const commandUri = Calls.getCommandUri("list/item");
+    return Calls.call("post", commandUri, dtoIn);
+  },
+
+  updateItem(dtoIn) {
+    const commandUri = Calls.getCommandUri("list/item/update");
+    return Calls.call("post", commandUri, dtoIn);
+  },
+
+  deleteItem(dtoIn) {
+    const commandUri = Calls.getCommandUri("list/item/delete");
+    return Calls.call("post", commandUri, dtoIn);
   },
 };
 

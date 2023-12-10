@@ -1,6 +1,6 @@
 //@@viewOn:imports
 import {
-  createVisualComponent, useSession,
+  createVisualComponent, useSession, useState,
 } from "uu5g05";
 import { withRoute } from "uu_plus4u5g02-app";
 
@@ -8,6 +8,8 @@ import Config from "./config/config.js";
 import Uu5Elements, {Block, Text} from "uu5g05-elements";
 import NamedCheckbox from "../bricks/named-checkbox";
 import ListCard from "../bricks/list-card";
+import ListEditModal from "../bricks/list-edit-modal";
+import React from "react";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -79,7 +81,9 @@ let Home = createVisualComponent({
         description: "Nulla non lectus sed nisl molestie malesuada. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Vivamus porttitor turpis ac leo. Morbi imperdiet, mauris ac auctor dictum, nisl ligula egestas nulla, et sollicitudin sem purus in lacus. "
       },
     ];
+
     const { identity } = useSession();
+    const [openCreate, setCreateOpen] = useState(false);
 
     //@@viewOff:private
 
@@ -114,12 +118,21 @@ let Home = createVisualComponent({
             }
 
             <Uu5Elements.Grid.Item>
-              <Uu5Elements.Box shape="interactiveItem" onClick={event => setRoute("create")} className={Css.card()} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+              <Uu5Elements.Box shape="interactiveItem" onClick={event => setCreateOpen(true)} className={Css.card()} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                 <Text style={{ margin: 'auto', fontSize: '7rem', color: 'grey'}} significance="subdued">+</Text>
               </Uu5Elements.Box>
+
+              <ListEditModal
+                header={"Creating list"}
+                open={openCreate}
+                onClose={() => setCreateOpen(false)}
+                listName="New List"
+                creating={true}
+              />
             </Uu5Elements.Grid.Item>
           </Uu5Elements.Grid>
         </Block>
+
       </div>
     );
     //@@viewOff:render
