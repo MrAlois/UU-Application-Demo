@@ -6,12 +6,14 @@ import {
 import { withRoute } from "uu_plus4u5g02-app";
 
 import Config from "./config/config.js";
-import {Block, Box, Text} from "uu5g05-elements";
+import {Block, Box, Input, Text} from "uu5g05-elements";
 import ListDetailItem from "../bricks/list-detail-item";
 import Uu5Elements from "uu5g05-elements";
-import ListCard from "../bricks/list-card";
 import ListEditModal from "../bricks/list-edit-modal";
 import React from "react";
+import Uu5Forms from "uu5g05-forms";
+import {LoremIpsum} from "uu5g05-dev";
+import {useSubApp} from "uu_plus4u5g02";
 
 //@@viewOff:imports
 
@@ -22,7 +24,11 @@ import React from "react";
 const Css = {
   content: () =>
     Config.Css.css({
-      padding: "2rem"
+      padding: '2rem',
+      position: 'absolute',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '60%',
     })
 };
 //@@viewOff:css
@@ -39,7 +45,9 @@ const ListMenu = createVisualComponent({
     return (
       <Content>
         <Block>
-          <Uu5Elements.Button icon="uugds-pencil" onClick={() => setEditOpen(true)} {...props}>
+          <Uu5Elements.Button icon="uugds-pencil" onClick={() => {
+            setEditOpen(true);
+          }} {...props}>
             Edit
           </Uu5Elements.Button>
           <Uu5Elements.Button icon="uugds-shield" onClick={() => setArchiveOpen(true)} {...props}/>
@@ -79,7 +87,7 @@ const ListMenu = createVisualComponent({
               onClick: () => console.log("Cancel"),
             },
             {
-              children: "Delete",
+              children: "Archive",
               onClick: () => alert("Archiving!"),
               colorScheme: "red",
               significance: "highlighted",
@@ -90,18 +98,17 @@ const ListMenu = createVisualComponent({
         <ListEditModal
           header={"Editing list"}
           open={openEdit}
-          onClose={() => setEditOpen(false)}
+          onClose={() => {
+            setEditOpen(false)
+            setEditedListProps(null)
+          }}
           listName={props.listName}
+          {...props}
         />
       </Content>
     );
   },
 });
-
-function createNumberSummary(items){
-  const doneCount = items.filter((item) => item.state === 1).length
-  return doneCount + " / " + items.length ;
-}
 
 let Detail = createVisualComponent({
   //@@viewOn:statics
@@ -118,35 +125,97 @@ let Detail = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-    const lorem = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Etiam posuere lacus quis dolor. Pellentesque sapien. Pellentesque pretium lectus id turpis. Nam sed tellus id magna elementum tincidunt. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla est. Maecenas aliquet accumsan leo. Nullam faucibus mi quis velit. Morbi leo mi, nonummy eget tristique non, rhoncus non leo. Suspendisse nisl. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Aenean vel massa quis mauris vehicula lacinia. Morbi leo mi, nonummy eget tristique non, rhoncus non leo.";
-    const detailData = {
-      listName: "Testing list 1",
-      ownerName: "Alois Šenkyřík",
-      dateCreated: "10.12.2023",
-      dateUpdate: "10.12.2023",
-      description: lorem,
-      members: ["Linda Kotlíková", "Bolek Polívka", "Miloš Zeman"],
-      items: [
-        {id: "1", description: "Tralalalal", state: 0},
-        {id: "2", description: "Johohooh", state: 0},
-        {id: "3", description: "Uvař vodue dolej víno", state: 0},
-        {id: "4", description: "Muhahaha", state: 0},
-        {id: "5", description: "Tralalaweaweal", state: 0},
-        {id: "6", description: "AWEFAGHfaefAGGAG145", state: 0},
-        {id: "1", description: ":):):):):(", state: 0}
-      ]
+    const allUsers = [
+      {id: "1", name: "Linda Kotlíková"},
+      {id: "2", name: "Bolek Polívka"},
+      {id: "3", name: "Miloš Zeman"},
+      {id: "4", name: "Alois Šenkyřík"}
+    ]
+
+    const [listName, setListName] = useState("Testing list 1")
+    const [ownerId, setOwnerIdId] = useState("4")
+    const [lastUpdated, setLastUpdated] = useState(new Date("10/12/2023"));
+    const [description, setDescription] = useState("Lorem ipsum dolor sit amet consectetur adipiscing elit. Ex sapien vitae pellentesque sem placerat in id. Pretium tellus duis convallis tempus leo eu aenean. Urna tempor pulvinar vivamus fringilla lacus nec metus. Iaculis massa nisl malesuada lacinia integer nunc posuere. Semper vel class aptent taciti sociosqu ad litora. Conubia nostra inceptos himenaeos orci varius natoque penatibus. Dis parturient montes nascetur ridiculus mus donec rhoncus. Nulla molestie mattis scelerisque maximus eget fermentum odio. Purus est efficitur laoreet mauris pharetra vestibulum fusce.");
+    const [memberList, setMemberList] = useState([
+      {id: "1", name: "Linda Kotlíková"},
+      {id: "2", name: "Bolek Polívka"},
+      {id: "3", name: "Miloš Zeman"}
+    ])
+
+    const [newItemName, setNewItemName] = useState("");
+
+    const [items, setItems] = useState([
+      {id: "1", description: "Eggs", state: 0},
+      {id: "2", description: "Milk", state: 0},
+      {id: "3", description: "Bread", state: 0},
+      {id: "4", description: "Butter", state: 0},
+      {id: "5", description: "Potato", state: 0},
+      {id: "6", description: "Onion", state: 0},
+      {id: "7", description: "Carrot", state: 0}
+    ]);
+
+    const toggleItemState = (id) => {
+      setItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === id ? { ...item, state: item.state === 0 ? 1 : 0 } : item
+        )
+      );
     };
+
+    const detailData = {
+      listName: listName,
+      ownerId: ownerId,
+      dateCreated: new Date("10/12/2023").toLocaleDateString(),
+      dateUpdate: lastUpdated,
+      description: description,
+      members: memberList,
+      allUsers: allUsers,
+      items: items
+    };
+
+    const updateData = (formData) => {
+      // If the new owner was in the member list, remove them
+      const updatedMembers = updateMembersBasedOnFormData(allUsers, formData);
+
+      // If the current owner is not the new owner, add them to the member list
+      const updatedOwnerId = updateOwnerIdBasedOnFormData(allUsers, formData, updatedMembers);
+
+      setListName(formData.listName)
+      setOwnerIdId(formData.ownerId)
+      setDescription(formData.description)
+      setMemberList(updatedOwnerId)
+      setLastUpdated(Date.now())
+    };
+
+    // Additional Helper Functions
+    const updateMembersBasedOnFormData = (allUsers, formData) => {
+      return allUsers.filter(
+        (member) => member.id !== formData.ownerId && formData.memberIds.includes(member.id)
+      );
+    };
+
+    const updateOwnerIdBasedOnFormData = (allUsers, formData, updatedMembers) => {
+      return formData.ownerId !== ownerId
+        ? [...updatedMembers, allUsers.find((user) => user.id === ownerId)]
+        : updatedMembers;
+    };
+
+    const createNumberSummary = (items) => {
+      const doneCount = items.filter((item) => item.state === 1).length
+      return doneCount + " / " + items.length ;
+    }
+
     const itemList = [
       {
         imageSrc: "https://cdn.plus4u.net/uu-plus4u5g01/4.0.0/assets/img/anonymous.png",
         subtitle: "Owner",
-        title: detailData.ownerName,
+        title: allUsers.find(user => user.id === ownerId).name,
       },
       { subtitle: "Date of creation", title: detailData.dateCreated },
-      { subtitle: "Date of update", title: detailData.dateUpdate },
+      { subtitle: "Last updated", title: new Date(lastUpdated).toLocaleDateString()},
       { subtitle: "Completed tasks", title: createNumberSummary(detailData.items) },
-      { subtitle: "Members", title: detailData.members.join(", ")},
-      { component: ListMenu }
+      { subtitle: "Members", title: detailData.members.map(item => item.name).join(", ")},
+      { component: <ListMenu onSubmit={(data) => updateData(data)} {...detailData}></ListMenu> }
     ];
     //@@viewOff:private
 
@@ -175,14 +244,38 @@ let Detail = createVisualComponent({
             <Text category="story" segment="heading" type="h3">List items</Text>
           )}
         >
-
-          <table>
+          <div style={{display: "flex", width: "100%", justifyContent: "center", padding: "1em"}}>
+            <Uu5Elements.Input
+              value={newItemName}
+              style={{width: "calc(500vw / 10 - 5vw)"}}
+              placeholder = "Add another item.."
+              onChange={(e) => setNewItemName(e.target.value)}
+            />
+            <Uu5Elements.Button text="Add Item"
+                                onClick={() => {
+                                  setItems((prevItems) => [...prevItems, {
+                                    id: Date.now().toString(),
+                                    description: newItemName,
+                                    state: 0
+                                  }]);
+                                  setLastUpdated(Date.now());
+                                }}>Add Item</Uu5Elements.Button>
+          </div>
+          <table style={{display: "flex", width: "100%", justifyContent: "center"}}>
             <tbody>
             {
               detailData.items.map(item => {
                 return (
-                  <ListDetailItem name={item.id} label={item.description} value={item.state} onDelete={() => {
-                  }}/>
+                  <ListDetailItem name={item.id} label={item.description} value={item.state}
+                                  onDelete={() => {
+                                    setItems(items.filter((i) => i.id !== item.id));
+                                    setLastUpdated(Date.now());
+                                  }}
+                                  onChange={() => {
+                                    toggleItemState(item.id)
+                                    setLastUpdated(Date.now());
+                                  }}
+                  />
                 )
               })
             }
@@ -195,6 +288,8 @@ let Detail = createVisualComponent({
     //@@viewOff:render
   }
 });
+
+
 
 Detail = withRoute(Detail);
 

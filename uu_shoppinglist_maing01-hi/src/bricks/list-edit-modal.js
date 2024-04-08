@@ -42,7 +42,7 @@ const ListEditModal = createVisualComponent({
       <Uu5Forms.Form.Provider
         onSubmit={(e) => {
           if (!navigator.onLine) throw new Error("Demo submit error example.");
-          alert("Submitted with values:\n" + JSON.stringify(e.data.value, null, 2));
+          props.onSubmit(e.data.value)
           props.onClose();
         }}
       >

@@ -94,16 +94,17 @@ let ListEditForm = createVisualComponent({
       listId,
       listName = "<undefined>",
       ownerId = "1",
-      memberId = [""],
-      users = [
-        { value: "1", children: "Alois Šenkyřík" },
-        { value: "2", children: "Linda Knížková" },
-      ],
+      members = [""],
+      allUsers = [""],
       description = "",
       creating = false
     } = props
 
-    const [route, setRoute] = useRoute();
+    const users = allUsers.map(user => ({
+      value: user.id,
+      children: user.name,
+    }));
+
     const TextSelect = withControlledInput(Uu5Forms.TextSelect);
     //@@viewOff:private
 
@@ -120,13 +121,12 @@ let ListEditForm = createVisualComponent({
         >
           <div className={Css.formBody()}>
             <div>
-              <Uu5Forms.FormText name="listName" label="List name" required
-                                 message="Item count is limited by current stock reserve."/>
+              <Uu5Forms.FormText initialValue={listName} placeholder={listName} name="listName" label="List name" required/>
             </div>
 
             <div className={Config.Css.css({display: "grid", rowGap: 8})}>
               <Uu5Forms.FormSelect
-                name="ownerName"
+                name="ownerId"
                 label="Owner"
                 initialValue={ownerId}
                 itemList={users}
@@ -135,20 +135,17 @@ let ListEditForm = createVisualComponent({
             </div>
 
             <div className={Config.Css.css({display: "grid", rowGap: 8})}>
-              <TextSelect
-                name="additionalUserId"
+              <Uu5Forms.FormTextSelect
+                name="memberIds"
                 label="Additional editors"
-                itemList={[
-                  {value: "12345", children: "Alois Šenkyřík"},
-                  {value: "54321", children: "Linda Knížková"},
-                ]}
-                value={["12345", "54321"]}
-                multiple
+                itemList={users}
+                initialValue={members.map(member =>  member.id)}
+                multiple={true}
               />
             </div>
 
             <div>
-              <Uu5Forms.FormTextArea name="desc" initialValue={description} label="Description"/>
+              <Uu5Forms.FormTextArea name="description" initialValue={description} label="Description"/>
             </div>
           </div>
         </Uu5Elements.Block>
