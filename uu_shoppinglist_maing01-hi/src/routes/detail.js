@@ -98,10 +98,7 @@ const ListMenu = createVisualComponent({
         <ListEditModal
           header={"Editing list"}
           open={openEdit}
-          onClose={() => {
-            setEditOpen(false)
-            setEditedListProps(null)
-          }}
+          onClose={() => setEditOpen(false)}
           listName={props.listName}
           {...props}
         />
