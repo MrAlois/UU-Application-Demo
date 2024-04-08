@@ -3,6 +3,7 @@ import {createComponent, createVisualComponent, useState} from "uu5g05";
 import Config from "./config/config.js";
 import {Button} from "uu5g05-elements";
 import Uu5Forms from "uu5g05-forms";
+import ListItemEditModal from "./list-item-edit-modal";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -68,6 +69,8 @@ function withControlledInput(Input) {
 const Checkboxer = withControlledInput(Uu5Forms.Checkbox);
 //@@viewOff:helpers
 
+
+
 const ListDetailItem = createVisualComponent({
   //@@viewOn:statics
   uu5Tag: Config.TAG + "ListDetailItem",
@@ -75,6 +78,7 @@ const ListDetailItem = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
+    const [openEdit, setEditOpen] = useState(false);
     //@@viewOff:private
 
     //@@viewOn:render
@@ -92,9 +96,18 @@ const ListDetailItem = createVisualComponent({
               />
         </td>
         <td style={{"display": "flex", "justifyContent": "flex-end"}}>
-            <Button icon="uugds-pencil" onClick={() => alert("Editing task: "+ id)}/>
+            <Button icon="uugds-pencil" onClick={() => setEditOpen(true)}/>
             <Button icon="uugds-delete" colorScheme="red" onClick={() => props.onDelete()}/>
         </td>
+
+        <ListItemEditModal
+          header={"Editing Item"}
+          open={openEdit}
+          onClose={() => setEditOpen(false)}
+          listItemId={props.id}
+          listItem={props.label}
+          {...props}
+        ></ListItemEditModal>
       </tr>
     );
     //@@viewOff:render

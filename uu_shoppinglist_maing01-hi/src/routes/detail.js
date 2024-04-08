@@ -1,7 +1,7 @@
 //@@viewOn:imports
 import {
   Content,
-  createVisualComponent, useSession, useState,
+  createVisualComponent, useState,
 } from "uu5g05";
 import { withRoute } from "uu_plus4u5g02-app";
 
@@ -11,13 +11,17 @@ import ListDetailItem from "../bricks/list-detail-item";
 import Uu5Elements from "uu5g05-elements";
 import ListEditModal from "../bricks/list-edit-modal";
 import React from "react";
-import Uu5Forms from "uu5g05-forms";
-import {LoremIpsum} from "uu5g05-dev";
-import {useSubApp} from "uu_plus4u5g02";
-
+import i from "uu5g05-test/src/enzyme/visual-component-props";
+import item from "uu5g05-test/src/enzyme/visual-component-props";
 //@@viewOff:imports
 
 //@@viewOn:constants
+const allUsers = [
+  {id: "1", name: "Linda Kotlíková"},
+  {id: "2", name: "Bolek Polívka"},
+  {id: "3", name: "Miloš Zeman"},
+  {id: "4", name: "Alois Šenkyřík"}
+]
 //@@viewOff:constants
 
 //@@viewOn:css
@@ -122,13 +126,6 @@ let Detail = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-    const allUsers = [
-      {id: "1", name: "Linda Kotlíková"},
-      {id: "2", name: "Bolek Polívka"},
-      {id: "3", name: "Miloš Zeman"},
-      {id: "4", name: "Alois Šenkyřík"}
-    ]
-
     const [listName, setListName] = useState("Testing list 1")
     const [ownerId, setOwnerIdId] = useState("4")
     const [lastUpdated, setLastUpdated] = useState(new Date("10/12/2023"));
@@ -150,14 +147,6 @@ let Detail = createVisualComponent({
       {id: "6", description: "Onion", state: 0},
       {id: "7", description: "Carrot", state: 0}
     ]);
-
-    const toggleItemState = (id) => {
-      setItems((prevItems) =>
-        prevItems.map((item) =>
-          item.id === id ? { ...item, state: item.state === 0 ? 1 : 0 } : item
-        )
-      );
-    };
 
     const detailData = {
       listName: listName,
@@ -184,7 +173,6 @@ let Detail = createVisualComponent({
       setLastUpdated(Date.now())
     };
 
-    // Additional Helper Functions
     const updateMembersBasedOnFormData = (allUsers, formData) => {
       return allUsers.filter(
         (member) => member.id !== formData.ownerId && formData.memberIds.includes(member.id)
@@ -197,10 +185,36 @@ let Detail = createVisualComponent({
         : updatedMembers;
     };
 
+    const updateItemName = (itemId, newItemName) => {
+      setItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === itemId ? { ...item, description: newItemName } : item
+        )
+      );
+    };
+
+    /**
+     * Calculates and returns a summary of the number of items in the given array.
+     *
+     * @param {Array} items - An array of items.
+     * @returns {String} - A summary indicating the number of items that are in state 1 and the total number of items.
+     */
     const createNumberSummary = (items) => {
       const doneCount = items.filter((item) => item.state === 1).length
       return doneCount + " / " + items.length ;
     }
+
+    /**
+     * Toggles the state of an item in the items array based on the given id.
+     *
+     * @param {number} id - The id of the item to toggle.
+     * @returns {undefined}
+     */
+    const toggleItemState = (id) => {
+      setItems((prevItems) =>
+        prevItems.map((item) => item.id === id ? { ...item, state: item.state === 0 ? 1 : 0 } : item)
+      );
+    };
 
     const itemList = [
       {
@@ -270,6 +284,10 @@ let Detail = createVisualComponent({
                                   }}
                                   onChange={() => {
                                     toggleItemState(item.id)
+                                    setLastUpdated(Date.now());
+                                  }}
+                                  onItemUpdate={(itemId, itemName) => {
+                                    updateItemName(itemId, itemName)
                                     setLastUpdated(Date.now());
                                   }}
                   />
