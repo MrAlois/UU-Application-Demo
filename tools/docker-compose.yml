@@ -1,0 +1,139 @@
+# Run
+# docker-compose up -d
+# Test
+# docker-compose ps
+version: '3.8'
+services:
+  mongo:
+    image: uu-app-development-docker-repo.repo.plus4u.net/uu_app_mongo_development:2.2.1
+    restart: unless-stopped
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodata:/data/db
+      - mongoconfig:/data/configdb
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+  rabbitmq:
+    image: rabbitmq:3.8.17-management-alpine
+    environment:
+      RABBITMQ_ERLANG_COOKIE: 6085e2412b6fa88647466c6a81c0cea0
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_DEFAULT_VHOST: rabbitmq
+    ports:
+      - 5672:5672
+      - 9091:15672
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "status" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
+  gatewayg02:
+    image: uu-app-development-docker-repo.repo.plus4u.net/uu_gatewayg02-server-nodejs:0.17.1
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - env_config/gateway-prop.env
+    ports:
+      - "9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  asyncjob:
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - env_config/async-prop.env
+    image: uu-app-development-docker-repo.repo.plus4u.net/uu_asyncjob_g01-server-java:2.21.0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  businessterritory:
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file:
+      - env_config/bt-prop.env
+    image: uu-app-development-docker-repo.repo.plus4u.net/uu_businessterritory_maing01-server:4.4.2
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  scriptEngine:
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - env_config/script-prop.env
+    image: uu-app-development-docker-repo.repo.plus4u.net/uu_script_engineg02-server-nodejs:1.26.0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  console:
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file:
+      - env_config/console-prop.env
+    image: uu-app-development-docker-repo.repo.plus4u.net/uu_console_maing02-server:2.8.1
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  scriptRepository:
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file:
+      - env_config/script-repo-prop.env
+    image: uu-app-development-docker-repo.repo.plus4u.net/uu_scriptrepository_maing02-server-nodejs:1.9.0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  eventBroker:
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - env_config/event-prop.env
+    image: uu-app-development-docker-repo.repo.plus4u.net/uu_territory_eventbrokerg01-server:0.11.1
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  myterritory:
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file:
+      - env_config/mt-prop.env
+    image: uu-app-development-docker-repo.repo.plus4u.net/uu_myterritory_maing01-server:1.31.2
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  digitalWorkspace:
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file:
+      - env_config/dw-prop.env
+    image: uu-app-development-docker-repo.repo.plus4u.net/uu_myterritory_dwg01-server-nodejs:0.37.0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  bem:
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file:
+      - env_config/bem-prop.env
+    image: uu-app-development-docker-repo.repo.plus4u.net/uu_bem_maing01-server-nodejs:1.21.0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+volumes:
+  mongodata:
+  mongoconfig:

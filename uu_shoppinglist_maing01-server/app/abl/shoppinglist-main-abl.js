@@ -129,24 +129,6 @@ class ShoppinglistMainAbl {
     // HDS 2
     return dtoOut;
   }
-
-  async loadBasicData(uri, session, uuAppErrorMap = {}) {
-    // HDS 1
-    const dtoOut = await UuAppWorkspace.loadBasicData(uri, session, uuAppErrorMap);
-
-    // TODO Implement according to application needs...
-    // const awid = uri.getAwid();
-    // const workspace = await UuAppWorkspace.get(awid);
-    // if (workspace.sysState !== UuAppWorkspace.SYS_STATES.CREATED &&
-    //    workspace.sysState !== UuAppWorkspace.SYS_STATES.ASSIGNED
-    // ) {
-    //   const appData = await this.dao.get(awid);
-    //   dtoOut.data = { ...appData, relatedObjectsMap: {} };
-    // }
-
-    // HDS 2
-    return dtoOut;
-  }
 }
 
 module.exports = new ShoppinglistMainAbl();

@@ -25,6 +25,46 @@
         "realization": "index.html",
         "httpMethod": "GET",
         "type": "UVE"
+      },
+      "shoppingList/list": {
+        "realization": "api/controllers/ShoppinglistMgmtController.getAllLists",
+        "httpMethod": "GET",
+        "type": "CMD"
+      },
+      "shoppingList/get": {
+        "realization": "api/controllers/ShoppinglistMgmtController.getList",
+        "httpMethod": "GET",
+        "type": "CMD"
+      },
+      "shoppingList/create": {
+        "realization": "api/controllers/ShoppinglistMgmtController.createList",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "shoppingList/delete": {
+        "realization": "api/controllers/ShoppinglistMgmtController.deleteList",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "shoppingList/update": {
+        "realization": "api/controllers/ShoppinglistMgmtController.updateList",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "shoppingList/item/add": {
+        "realization": "api/controllers/ShoppinglistMgmtController.addShoppingItem",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "shoppingList/item/modify": {
+        "realization": "api/controllers/ShoppinglistMgmtController.modifyShoppingItem",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
+      "shoppingList/item/remove": {
+        "realization": "api/controllers/ShoppinglistMgmtController.removeShoppingItem",
+        "httpMethod": "POST",
+        "type": "CMD"
       }
     }
   }

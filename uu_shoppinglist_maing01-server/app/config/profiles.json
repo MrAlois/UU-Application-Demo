@@ -5,7 +5,7 @@
     }
   },
   "*": {
-    "profileList": ["Authorities", "Executives", "AwidLicenseOwner", "Public", "Authenticated", "AwidInitiator"],
+    "profileList": ["Authorities", "Executives", "AwidLicenseOwner", "Public", "Authenticated", "Owner", "Member"],
     "useCaseMap": {
       "sys/uuAppWorkspace/init": {
         "sysStateList": ["created", "assigned"],
@@ -25,6 +25,38 @@
       "sys/uuAppWorkspace/initUve": {
         "sysStateList": ["created"],
         "profileList": ["Public", "AwidLicenseOwner"]
+      },
+      "shoppingList/list": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "shoppingList/get": {
+        "sysStateList": ["active"],
+        "profileList": ["Public" ,"Owner", "Member"]
+      },
+      "shoppingList/create": {
+        "sysStateList": ["active"],
+        "profileList": ["Public"]
+      },
+      "shoppingList/delete": {
+        "sysStateList": ["active"],
+        "profileList": ["Public", "Owner"]
+      },
+      "shoppingList/update": {
+        "sysStateList": ["active"],
+        "profileList": ["Public", "Owner"]
+      },
+      "shoppingList/item/add": {
+        "sysStateList": ["active"],
+        "profileList": ["Public", "Owner", "Member"]
+      },
+      "shoppingList/item/modify": {
+        "sysStateList": ["active"],
+        "profileList": ["Public", "Owner", "Member"]
+      },
+      "shoppingList/item/remove": {
+        "sysStateList": ["active"],
+        "profileList": ["Public", "Owner", "Member"]
       }
     }
   }
