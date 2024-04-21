@@ -1,27 +1,16 @@
 //@@viewOn:imports
-import {
-  Content,
-  createVisualComponent, useState,
-} from "uu5g05";
+import {Content, createVisualComponent, useRoute, useState} from "uu5g05";
 import { withRoute } from "uu_plus4u5g02-app";
 
 import Config from "./config/config.js";
-import {Block, Box, Input, Text} from "uu5g05-elements";
-import ListDetailItem from "../bricks/list-detail-item";
+import {Block, Button, Text} from "uu5g05-elements";
+import ListItemDetail from "../bricks/list-item-detail";
 import Uu5Elements from "uu5g05-elements";
 import ListEditModal from "../bricks/list-edit-modal";
 import React from "react";
-import i from "uu5g05-test/src/enzyme/visual-component-props";
-import item from "uu5g05-test/src/enzyme/visual-component-props";
 //@@viewOff:imports
 
 //@@viewOn:constants
-const allUsers = [
-  {id: "1", name: "Linda Kotlíková"},
-  {id: "2", name: "Bolek Polívka"},
-  {id: "3", name: "Miloš Zeman"},
-  {id: "4", name: "Alois Šenkyřík"}
-]
 //@@viewOff:constants
 
 //@@viewOn:css
@@ -72,7 +61,7 @@ const ListMenu = createVisualComponent({
             },
             {
               children: "Delete",
-              onClick: () => alert("Deleting!"),
+              onClick: () => props.deleteList(props.listId),
               colorScheme: "red",
               significance: "highlighted",
             },
@@ -92,7 +81,7 @@ const ListMenu = createVisualComponent({
             },
             {
               children: "Archive",
-              onClick: () => alert("Archiving!"),
+              onClick: () => props.updateList(props.listId, { archived: true}),
               colorScheme: "red",
               significance: "highlighted",
             },
@@ -117,19 +106,34 @@ let Detail = createVisualComponent({
   //@@viewOff:statics
 
   //@@viewOn:propTypes
-  propTypes: {},
+  propTypes: {
+    listName: "string",
+    ownerId: "string",
+    lastUpdated: "string",
+    description: "string"
+  },
   //@@viewOff:propTypes
 
   //@@viewOn:defaultProps
-  defaultProps: {},
+  defaultProps: {
+    listId: "Unknown list",
+    ownerId: "1",
+    lastUpdated: "10/12/2023",
+    description: "Lorem ipsum dolor sit amet consectetur adipiscing elit. Ex sapien vitae pellentesque sem placerat in id. Pretium tellus duis convallis tempus leo eu aenean. Urna tempor pulvinar vivamus fringilla lacus nec metus. Iaculis massa nisl malesuada lacinia integer nunc posuere. Semper vel class aptent taciti sociosqu ad litora. Conubia nostra inceptos himenaeos orci varius natoque penatibus. Dis parturient montes nascetur ridiculus mus donec rhoncus. Nulla molestie mattis scelerisque maximus eget fermentum odio. Purus est efficitur laoreet mauris pharetra vestibulum fusce."
+  },
   //@@viewOff:defaultProps
 
   render(props) {
     //@@viewOn:private
-    const [listName, setListName] = useState("Testing list 1")
-    const [ownerId, setOwnerIdId] = useState("4")
+    const [route, setRoute] = useRoute()
+
+    //TODO ListID and select from globals.
+    const [listName, setListName] = useState(props.listName)
+    const [ownerId, setOwnerIdId] = useState(props.ownerId)
     const [lastUpdated, setLastUpdated] = useState(new Date("10/12/2023"));
-    const [description, setDescription] = useState("Lorem ipsum dolor sit amet consectetur adipiscing elit. Ex sapien vitae pellentesque sem placerat in id. Pretium tellus duis convallis tempus leo eu aenean. Urna tempor pulvinar vivamus fringilla lacus nec metus. Iaculis massa nisl malesuada lacinia integer nunc posuere. Semper vel class aptent taciti sociosqu ad litora. Conubia nostra inceptos himenaeos orci varius natoque penatibus. Dis parturient montes nascetur ridiculus mus donec rhoncus. Nulla molestie mattis scelerisque maximus eget fermentum odio. Purus est efficitur laoreet mauris pharetra vestibulum fusce.");
+    const [description, setDescription] = useState(props.description);
+
+
     const [memberList, setMemberList] = useState([
       {id: "1", name: "Linda Kotlíková"},
       {id: "2", name: "Bolek Polívka"},
@@ -155,16 +159,15 @@ let Detail = createVisualComponent({
       dateUpdate: lastUpdated,
       description: description,
       members: memberList,
-      allUsers: allUsers,
       items: items
     };
 
     const updateData = (formData) => {
       // If the new owner was in the member list, remove them
-      const updatedMembers = updateMembersBasedOnFormData(allUsers, formData);
+      const updatedMembers = updateMembersBasedOnFormData(global.ALL_USERS, formData);
 
       // If the current owner is not the new owner, add them to the member list
-      const updatedOwnerId = updateOwnerIdBasedOnFormData(allUsers, formData, updatedMembers);
+      const updatedOwnerId = updateOwnerIdBasedOnFormData(global.ALL_USERS, formData, updatedMembers);
 
       setListName(formData.listName)
       setOwnerIdId(formData.ownerId)
@@ -220,7 +223,7 @@ let Detail = createVisualComponent({
       {
         imageSrc: "https://cdn.plus4u.net/uu-plus4u5g01/4.0.0/assets/img/anonymous.png",
         subtitle: "Owner",
-        title: allUsers.find(user => user.id === ownerId).name,
+        title: global.ALL_USERS.find(user => user.id === ownerId).name,
       },
       { subtitle: "Date of creation", title: detailData.dateCreated },
       { subtitle: "Last updated", title: new Date(lastUpdated).toLocaleDateString()},
@@ -277,7 +280,7 @@ let Detail = createVisualComponent({
             {
               detailData.items.map(item => {
                 return (
-                  <ListDetailItem name={item.id} label={item.description} value={item.state}
+                  <ListItemDetail name={item.id} label={item.description} value={item.state}
                                   onDelete={() => {
                                     setItems(items.filter((i) => i.id !== item.id));
                                     setLastUpdated(Date.now());
@@ -296,7 +299,10 @@ let Detail = createVisualComponent({
             }
             </tbody>
           </table>
-
+          <br/>
+          <Uu5Elements.Button onClick={() => setRoute(route.prevRoute)} {...props}>
+            Go Back
+          </Uu5Elements.Button>
         </Block>
       </Block>
     );

@@ -1,19 +1,25 @@
 //@@viewOn:imports
-import {createVisualComponent, useState, useRoute} from "uu5g05";
-import Uu5Elements from "uu5g05-elements";
+import {createVisualComponent} from "uu5g05";
+import Uu5Elements, {Text} from "uu5g05-elements";
 import { Config } from "uu5g05-dev";
 
 import Uu5Forms from "uu5g05-forms";
-import ListEditForm from "./list-edit-form";
 //@@viewOff:imports
 
 //@@viewOn:css
 const Css = {
-  checkbox: () =>
+  content: () =>
     Config.Css.css({
-      margin: "0.5rem",
-      alignSelf: "flex-end"
+      backgroundColor: "black",
+      margin: "100rem"
     }),
+  formBody: () =>
+    Config.Css.css({
+      display: "grid",
+      rowGap: 8,
+      columnGap: 32,
+      margin: "0 15% 0 15%"
+    })
 };
 //@@viewOff:css
 
@@ -26,15 +32,34 @@ const ListEditModal = createVisualComponent({
   //@@viewOff:statics
 
   //@@viewOn:propTypes
-  propTypes: {},
+  propTypes: {
+    listId: "string",
+    listName: "string",
+    owner: { id: "string", name: "string" },
+    members: [{ id: "string", name: "string" }],
+    description: "string",
+    creating: "boolean",
+    archived: "boolean"
+  },
   //@@viewOff:propTypes
 
   //@@viewOn:defaultProps
-  defaultProps: {},
+  defaultProps: {
+    listName: "Undefined list",
+    owner: { id: "0", name: "Undefined owner" },
+    members: [],
+    description: "",
+    archived: false,
+    creating: true,
+  },
   //@@viewOff:defaultProps
 
   render(props) {
     //@@viewOn:private
+    const parsedUsers = global.ALL_USERS.map(user => ({
+      value: user.id,
+      children: user.name,
+    }));
     //@@viewOff:private
 
     //@@viewOn:render
@@ -61,7 +86,47 @@ const ListEditModal = createVisualComponent({
             </Uu5Elements.Grid>
           }
         >
-          <ListEditForm {...props}></ListEditForm>
+          <Uu5Forms.Form.View>
+            <Uu5Elements.Block
+              {...props}
+              info="Edit or create a new list"
+              header={
+                props.creating
+                  ? <Text category="story" segment="heading" type="h2">Create new list</Text>
+                  : <Text category="story" segment="heading" type="h2">Editing "{props.listName}"</Text>
+              }
+            >
+              <div className={Css.formBody()}>
+                <div>
+                  <Uu5Forms.FormText initialValue={props.listName} placeholder={props.listName} name="listName" label="List name" required/>
+                </div>
+
+                <div className={Config.Css.css({display: "grid", rowGap: 8})}>
+                  <Uu5Forms.FormSelect
+                    name="ownerId"
+                    label="Owner"
+                    initialValue={props.ownerId}
+                    itemList={parsedUsers}
+                    disabled={props.creating}
+                  />
+                </div>
+
+                <div className={Config.Css.css({display: "grid", rowGap: 8})}>
+                  <Uu5Forms.FormTextSelect
+                    name="memberIds"
+                    label="Additional editors"
+                    itemList={parsedUsers}
+                    initialValue={props.members.map(member =>  member.id)}
+                    multiple={true}
+                  />
+                </div>
+
+                <div>
+                  <Uu5Forms.FormTextArea name="description" initialValue={props.description} label="Description"/>
+                </div>
+              </div>
+            </Uu5Elements.Block>
+          </Uu5Forms.Form.View>
         </Uu5Elements.Modal>
       </Uu5Forms.Form.Provider>
     );

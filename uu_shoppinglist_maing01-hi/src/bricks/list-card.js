@@ -1,9 +1,9 @@
 //@@viewOn:imports
-import {Utils, createVisualComponent, PropTypes, useScreenSize, useState, useRoute} from "uu5g05";
+import {createVisualComponent, Fragment, useRef, useRoute, useState} from "uu5g05";
 
 import Config from "./config/config.js";
-import {Box, Button, Line, Link, Text} from "uu5g05-elements";
-import ListCardPopoverMenu from "./list-card-popover-menu";
+import Uu5Elements, {Line, Link, Text} from "uu5g05-elements";
+import ListEditModal from "./list-edit-modal";
 import React from "react";
 //@@viewOff:imports
 
@@ -27,6 +27,90 @@ const Css = {
 //@@viewOn:helpers
 //@@viewOff:helpers
 
+const ListCardPopoverMenu = createVisualComponent({
+  render({ preferredPosition, children, icon, ...popoverProps}) {
+    const [popoverSettings, setPopoverSettings] = useState(null);
+    const buttonRef = useRef();
+    const [editOpen, setEditOpen] = useState(false);
+    const [openDelete, setDeleteOpen] = useState(false);
+    const [openArchive, setArchiveOpen] = useState(false);
+
+    return (
+      <>
+        <Fragment>
+          <Uu5Elements.Button
+            icon={icon}
+            elementRef={buttonRef}
+            onClick={e => setPopoverSettings({ element: buttonRef.current, key: Math.random() })}
+            pressed={!!(popoverSettings || {}).element}
+          >
+            {children}
+          </Uu5Elements.Button>
+          {popoverSettings && (
+            <Uu5Elements.Popover
+              {...popoverProps}
+              {...popoverSettings}
+              elementOffset={4}
+              preferredPosition={preferredPosition}
+              onClose={() => setPopoverSettings(null)}
+              className={Config.Css.css`padding: 8px;`}
+            >
+              <Uu5Elements.MenuList itemList={[
+                { children: "Edit", icon: "uugds-pencil", onClick: () => setEditOpen(true)},
+                { children: "Archive", icon: "uugds-shield", onClick: () => setArchiveOpen(true)},
+                { divider: true },
+                { children: "Delete", icon: "uugds-delete", onClick: () => setDeleteOpen(true) },
+              ]} />
+            </Uu5Elements.Popover>
+          )}
+        </Fragment>
+
+        <ListEditModal open={editOpen} creating={false} onClose={() => setEditOpen(false)} onSubmit={(data) => popoverProps.updateList(popoverProps.listId, data)} {...popoverProps}></ListEditModal>
+        <Uu5Elements.Dialog
+          open={openDelete}
+          onClose={() => setDeleteOpen(false)}
+          header="Delete this list?"
+          icon={<Uu5Elements.Svg code="uugdssvg-svg-delete" />}
+          info="List data cannot be recovered"
+          actionDirection="horizontal"
+          actionList={[
+            {
+              children: "Cancel",
+              onClick: () => console.log("Cancel"),
+            },
+            {
+              children: "Delete",
+              onClick: () => popoverProps.deleteList(popoverProps.listId),
+              colorScheme: "red",
+              significance: "highlighted",
+            },
+          ]}
+        />
+
+        <Uu5Elements.Dialog
+          open={openArchive}
+          onClose={() => setArchiveOpen(false)}
+          header="Archive this list?"
+          icon={<Uu5Elements.Svg code="uugdssvg-svg-security" />}
+          actionDirection="horizontal"
+          actionList={[
+            {
+              children: "Cancel",
+              onClick: () => console.log("Cancel"),
+            },
+            {
+              children: "Archive",
+              onClick: () => popoverProps.updateList(popoverProps.listId, { archived: true}),
+              colorScheme: "red",
+              significance: "highlighted",
+            },
+          ]}
+        />
+      </>
+    );
+  }
+});
+
 const ListCard = createVisualComponent({
   //@@viewOn:statics
   uu5Tag: Config.TAG + "ListCard",
@@ -36,26 +120,37 @@ const ListCard = createVisualComponent({
   propTypes: {
     listId: "string",
     listName: "string",
-    ownerName: "string",
-    dateCreated: "date",
+    //owner: "string",
+    lastUpdated: "string",
     description: "string",
+    archived: "boolean",
+    //members: [array
   },
   //@@viewOff:propTypes
 
   //@@viewOn:defaultProps
   defaultProps: {
-    listName: "Undefined",
-    ownerName: "<Unknown>",
-    dateCreated: "DD-MM-YYYY",
+    listId: "0",
+    listName: "Undefined list",
+    owner: {
+      id: "0",
+      name: "Undefined owner"
+    },
+    lastUpdated: "string",
+    description: "string",
+    archived: true,
+    members: []
   },
   //@@viewOff:defaultProps
 
   render(props) {
     //@@viewOn:private
-    const loremIpsum = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Sed convallis magna eu sem. Nunc auctor. In rutrum. In enim a arcu imperdiet malesuada. Maecenas lorem. Aenean fermentum risus id tortor. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.";
-    const { listId, listName, ownerName, dateCreated, description = loremIpsum} = props;
-
     const [route, setRoute] = useRoute()
+
+    function trimDescription(description) {
+        return description.length > 200 ? `${description.substring(0, 200)}...` : description;
+    }
+
     //@@viewOff:private
 
     //@@viewOn:interface
@@ -65,22 +160,22 @@ const ListCard = createVisualComponent({
     return (
       <div className={Css.cardBody()}>
         <div className={Css.spaceBetween()}>
-          <Link colorScheme="primary" target="_self" onClick={event => setRoute("/detail", {id: listId})}>
-            <Text category="story" segment="heading" type="h4">{listName}</Text>
+          <Link colorScheme={props.archived ? "secondary" : "primary"} target="_self" onClick={event => setRoute("/detail", { listId: props.listId })}>
+            <Text category="story" segment="heading" type="h4">{props.listName}</Text>
           </Link>
-          <ListCardPopoverMenu icon={UU5.Icons.menu} preferredPosition="bottom-right"/>
+          <ListCardPopoverMenu icon={UU5.Icons.menu} preferredPosition="bottom-right" {...props}/>
         </div>
 
         <p></p>
         <Line/>
 
         <div className={Css.spaceBetween()}>
-          <Text category="story" segment="body" type="minor">Owner:  {ownerName}</Text>
-          <Text category="story" segment="body" type="minor">{dateCreated}</Text>
+          <Text category="story" segment="body" type="minor">Owner:  {props.owner.name}</Text>
+          <Text category="story" segment="body" type="minor">{props.dateCreated}</Text>
         </div>
 
         <p></p>
-        <Text autoFit={true} category="story" segment="body" type="common">{description.substring(0, 200)} {description.length >= 200 && '...'}</Text>
+        <Text autoFit={true} category="story" segment="body" type="common">{trimDescription(props.description)}</Text>
       </div>
     );
     //@@viewOff:render

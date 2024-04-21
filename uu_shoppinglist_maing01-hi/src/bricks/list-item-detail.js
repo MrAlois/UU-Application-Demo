@@ -10,15 +10,6 @@ import ListItemEditModal from "./list-item-edit-modal";
 //@@viewOff:constants
 
 //@@viewOn:css
-const Css = {
-  title: () =>
-    Config.Css.css({
-      margin: "2em",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-    }),
-};
 //@@viewOff:css
 
 //@@viewOn:helpers
@@ -66,12 +57,10 @@ function withControlledInput(Input) {
   };
 }
 
-const Checkboxer = withControlledInput(Uu5Forms.Checkbox);
+const ListItemCheckbox = withControlledInput(Uu5Forms.Checkbox);
 //@@viewOff:helpers
 
-
-
-const ListDetailItem = createVisualComponent({
+const ListItemDetail = createVisualComponent({
   //@@viewOn:statics
   uu5Tag: Config.TAG + "ListDetailItem",
   //@@viewOff:statics
@@ -85,7 +74,7 @@ const ListDetailItem = createVisualComponent({
     return (
       <tr style={{"display": "flex", "width": "100%", "justifyContent": "center"}}>
         <td>
-              <Checkboxer
+              <ListItemCheckbox
                 {...props}
                 itemList={[
                   {value: 0},
@@ -107,7 +96,7 @@ const ListDetailItem = createVisualComponent({
           listItemId={props.id}
           listItem={props.label}
           {...props}
-        ></ListItemEditModal>
+        />
       </tr>
     );
     //@@viewOff:render
@@ -115,6 +104,6 @@ const ListDetailItem = createVisualComponent({
 });
 
 //@@viewOn:exports
-export {ListDetailItem};
-export default ListDetailItem;
+export {ListItemDetail};
+export default ListItemDetail;
 //@@viewOff:exports

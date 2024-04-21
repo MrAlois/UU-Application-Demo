@@ -1,20 +1,12 @@
 //@@viewOn:imports
-import {createVisualComponent, useState, useRoute} from "uu5g05";
-import Uu5Elements, {Text} from "uu5g05-elements";
+import {createVisualComponent} from "uu5g05";
+import Uu5Elements from "uu5g05-elements";
 import { Config } from "uu5g05-dev";
 
 import Uu5Forms from "uu5g05-forms";
-import ListEditForm from "./list-edit-form";
 //@@viewOff:imports
 
 //@@viewOn:css
-const Css = {
-  checkbox: () =>
-    Config.Css.css({
-      margin: "0.5rem",
-      alignSelf: "flex-end"
-    }),
-};
 //@@viewOff:css
 
 //@@viewOn:helpers

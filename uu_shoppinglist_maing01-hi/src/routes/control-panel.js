@@ -43,6 +43,7 @@ let ControlPanel = createVisualComponent({
     let child;
     let territoryBaseUri;
     let artifactId;
+
     if (state === "error" || state === "errorNoData") {
       child = (
         <Plus4U5App.Error error={errorData?.error}>
