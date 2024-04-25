@@ -35,6 +35,7 @@ const ListCardPopoverMenu = createVisualComponent({
     const [openDelete, setDeleteOpen] = useState(false);
     const [openArchive, setArchiveOpen] = useState(false);
 
+    const isMember = popoverProps.owner?.id !== global.CURRENT_USER.id
     return (
       <>
         <Fragment>
@@ -43,6 +44,7 @@ const ListCardPopoverMenu = createVisualComponent({
             elementRef={buttonRef}
             onClick={e => setPopoverSettings({ element: buttonRef.current, key: Math.random() })}
             pressed={!!(popoverSettings || {}).element}
+            disabled={isMember}
           >
             {children}
           </Uu5Elements.Button>
@@ -65,7 +67,18 @@ const ListCardPopoverMenu = createVisualComponent({
           )}
         </Fragment>
 
-        <ListEditModal open={editOpen} creating={false} onClose={() => setEditOpen(false)} onSubmit={(data) => popoverProps.updateList(popoverProps.listId, data)} {...popoverProps}></ListEditModal>
+        <ListEditModal
+          open={editOpen}
+          creating={false}
+          onClose={() => setEditOpen(false)}
+          onSubmit={(data) => {
+            data.owner = global.ALL_USERS.find(user => user.id === data.ownerId);
+            data.members = data.memberIds.map(memberId => global.ALL_USERS.find(user => user.id === memberId));
+            return popoverProps.updateList(popoverProps.listId, data);
+          }}
+          {...popoverProps}
+        />
+
         <Uu5Elements.Dialog
           open={openDelete}
           onClose={() => setDeleteOpen(false)}
@@ -132,6 +145,7 @@ const ListCard = createVisualComponent({
   defaultProps: {
     listId: "0",
     listName: "Undefined list",
+    dateCreated: new Date().toLocaleDateString(),
     owner: {
       id: "0",
       name: "Undefined owner"
@@ -151,16 +165,22 @@ const ListCard = createVisualComponent({
         return description.length > 200 ? `${description.substring(0, 200)}...` : description;
     }
 
+    function showMemberCountHint(){
+      if (props.members.length > 0) {
+        return (
+          <Text category="story" segment="body" type="minor" colorScheme="dim">
+             +{props.members.length} member{props.members.length === 1 ? "" : "s"}
+          </Text>
+        );
+      }
+    }
     //@@viewOff:private
-
-    //@@viewOn:interface
-    //@@viewOff:interface
 
     //@@viewOn:render
     return (
       <div className={Css.cardBody()}>
         <div className={Css.spaceBetween()}>
-          <Link colorScheme={props.archived ? "secondary" : "primary"} target="_self" onClick={event => setRoute("/detail", { listId: props.listId })}>
+          <Link colorScheme={props.archived ? "secondary" : "primary"}  onClick={() => setRoute("detail", { id: props.listId })}>
             <Text category="story" segment="heading" type="h4">{props.listName}</Text>
           </Link>
           <ListCardPopoverMenu icon={UU5.Icons.menu} preferredPosition="bottom-right" {...props}/>
@@ -170,7 +190,8 @@ const ListCard = createVisualComponent({
         <Line/>
 
         <div className={Css.spaceBetween()}>
-          <Text category="story" segment="body" type="minor">Owner:  {props.owner.name}</Text>
+          <Text category="story" segment="body" type="minor">Owner:  {props.owner.name} {showMemberCountHint()}</Text>
+
           <Text category="story" segment="body" type="minor">{props.dateCreated}</Text>
         </div>
 

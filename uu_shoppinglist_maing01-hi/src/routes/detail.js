@@ -93,6 +93,7 @@ const ListMenu = createVisualComponent({
           open={openEdit}
           onClose={() => setEditOpen(false)}
           listName={props.listName}
+          ownerId={props.owner?.id}
           {...props}
         />
       </Content>
@@ -125,20 +126,17 @@ let Detail = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-    const [route, setRoute] = useRoute()
+    const [, setRoute] = useRoute()
+
+    const listDetailData = global.ALL_LISTS.find((list) => list.listId === props.params.id);
+    alert(JSON.stringify(listDetailData))
 
     //TODO ListID and select from globals.
-    const [listName, setListName] = useState(props.listName)
-    const [ownerId, setOwnerIdId] = useState(props.ownerId)
-    const [lastUpdated, setLastUpdated] = useState(new Date("10/12/2023"));
-    const [description, setDescription] = useState(props.description);
-
-
-    const [memberList, setMemberList] = useState([
-      {id: "1", name: "Linda Kotlíková"},
-      {id: "2", name: "Bolek Polívka"},
-      {id: "3", name: "Miloš Zeman"}
-    ])
+    const [listName, setListName] = useState(listDetailData.listName)
+    const [ownerId, setOwnerIdId] = useState(listDetailData.ownerId)
+    const [lastUpdated, setLastUpdated] = useState(listDetailData.lastUpdated);
+    const [description, setDescription] = useState(listDetailData.description);
+    const [memberList, setMemberList] = useState(listDetailData.members)
 
     const [newItemName, setNewItemName] = useState("");
 
@@ -154,7 +152,7 @@ let Detail = createVisualComponent({
 
     const detailData = {
       listName: listName,
-      ownerId: ownerId,
+      ownerId: ownerId, //TODO Prostě přepiš na najitý list
       dateCreated: new Date("10/12/2023").toLocaleDateString(),
       dateUpdate: lastUpdated,
       description: description,
@@ -223,7 +221,7 @@ let Detail = createVisualComponent({
       {
         imageSrc: "https://cdn.plus4u.net/uu-plus4u5g01/4.0.0/assets/img/anonymous.png",
         subtitle: "Owner",
-        title: global.ALL_USERS.find(user => user.id === ownerId).name,
+        title: global.ALL_USERS.find(user => user.id === ownerId)?.name,
       },
       { subtitle: "Date of creation", title: detailData.dateCreated },
       { subtitle: "Last updated", title: new Date(lastUpdated).toLocaleDateString()},
@@ -300,7 +298,7 @@ let Detail = createVisualComponent({
             </tbody>
           </table>
           <br/>
-          <Uu5Elements.Button onClick={() => setRoute(route.prevRoute)} {...props}>
+          <Uu5Elements.Button onClick={() => setRoute("home")}>
             Go Back
           </Uu5Elements.Button>
         </Block>

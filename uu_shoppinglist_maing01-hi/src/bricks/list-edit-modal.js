@@ -46,7 +46,7 @@ const ListEditModal = createVisualComponent({
   //@@viewOn:defaultProps
   defaultProps: {
     listName: "Undefined list",
-    owner: { id: "0", name: "Undefined owner" },
+    owner: global.CURRENT_USER,
     members: [],
     description: "",
     archived: false,
@@ -56,7 +56,7 @@ const ListEditModal = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-    const parsedUsers = global.ALL_USERS.map(user => ({
+    const availableUsers = global.ALL_USERS.map(user => ({
       value: user.id,
       children: user.name,
     }));
@@ -78,7 +78,6 @@ const ListEditModal = createVisualComponent({
           footer={
             <Uu5Elements.Grid
               templateColumns={{ xs: "repeat(2, 1fr)", s: "repeat(2, auto)" }}
-              // columnGap={Uu5Elements.UuGds.SpacingPalette.getValue(["fixed", "c"])}
               justifyContent={{ s: "end" }}
             >
               <Uu5Forms.CancelButton onClick={props.onClose} />
@@ -105,9 +104,10 @@ const ListEditModal = createVisualComponent({
                   <Uu5Forms.FormSelect
                     name="ownerId"
                     label="Owner"
-                    initialValue={props.ownerId}
-                    itemList={parsedUsers}
-                    disabled={props.creating}
+                    initialValue={props.owner?.id}
+                    itemList={availableUsers}
+                    disabled={props.creating || props.owner?.id !== global.CURRENT_USER.id}
+                    required={true}
                   />
                 </div>
 
@@ -115,7 +115,7 @@ const ListEditModal = createVisualComponent({
                   <Uu5Forms.FormTextSelect
                     name="memberIds"
                     label="Additional editors"
-                    itemList={parsedUsers}
+                    itemList={availableUsers}
                     initialValue={props.members.map(member =>  member.id)}
                     multiple={true}
                   />
